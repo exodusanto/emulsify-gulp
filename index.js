@@ -10,6 +10,9 @@ module.exports = (gulp, config) => {
   const babel = require('gulp-babel');
   const sourcemaps = require('gulp-sourcemaps');
   const defaultConfig = require('./gulp-config');
+  const webpack = require('webpack-stream');
+  const named = require('vinyl-named');
+  const ts = require('gulp-typescript');
 
   // eslint-disable-next-line no-redeclare, no-var
   var config = _.defaultsDeep(config, defaultConfig);
@@ -43,28 +46,43 @@ module.exports = (gulp, config) => {
   /**
    * Script Task
    */
-  gulp.task('scripts', () => {
-    gulp
-      .src(config.paths.js)
-      .pipe(sourcemaps.init())
+  gulp.task('ts-scripts', () => {
+    gulp.src(config.paths.ts)
       .pipe(
-        babel({
-          presets: ['env', 'minify'],
+        ts({
+          compilerOptions: {
+            target: 'es5',
+            module: 'commonjs',
+            sourceMap: true,
+          },
         }),
       )
+      .pipe(gulp.dest(file => file.base));
+  });
+
+  gulp.task('js-bundle', () => {
+    gulp.src(config.paths.jsBundle)
+      .pipe(named())
+      .pipe(webpack())
+      .pipe(gulp.dest(config.paths.dist_bundle));
+  });
+
+  gulp.task('scripts', () => {
+    gulp.src(config.paths.js)
+      .pipe(sourcemaps.init())
+      .pipe(babel({
+        presets: ['env', 'minify'],
+      }))
       .pipe(sourcemaps.write(config.themeDir))
       .pipe(gulp.dest(config.paths.dist_js));
   });
 
   gulp.task('styleguide-scripts', () => {
-    gulp
-      .src(config.paths.js)
+    gulp.src(config.paths.js)
       .pipe(sourcemaps.init())
-      .pipe(
-        babel({
-          presets: ['env'],
-        }),
-      )
+      .pipe(babel({
+        presets: ['env'],
+      }))
       // Concatenate everything within the JavaScript folder.
       .pipe(concat('scripts-styleguide.js'))
       .pipe(sourcemaps.write(config.themeDir))
@@ -75,25 +93,22 @@ module.exports = (gulp, config) => {
    * Task for minifying images.
    */
   gulp.task('imagemin', () => {
-    gulp
-      .src(config.paths.img)
-      .pipe(
-        imagemin([
-          imagemin.jpegtran({ progressive: true }),
-          imagemin.svgo({
-            plugins: [{ removeViewBox: false }, { cleanupIDs: false }],
-          }),
-        ]),
-      )
-      .pipe(gulp.dest(file => file.base));
+    gulp.src(`${config.paths.img}/**/*`)
+      .pipe(imagemin({
+        progressive: true,
+        svgoPlugins: [
+          { removeViewBox: false },
+          { cleanupIDs: false },
+        ],
+      }))
+      .pipe(gulp.dest(config.paths.dist_img));
   });
 
   /**
    * Task for generating icon colors/png fallbacks from svg.
    */
   gulp.task('icons', () => {
-    gulp
-      .src('**/*.svg', { cwd: `${config.paths.img}/icons/src` })
+    gulp.src('**/*.svg', { cwd: `${config.paths.img}/icons/src` })
       .pipe(svgSprite(config.iconConfig))
       .pipe(gulp.dest('.'));
   });
@@ -112,7 +127,7 @@ module.exports = (gulp, config) => {
   /**
    * Task for running browserSync.
    */
-  gulp.task('serve', ['imagemin', 'css', 'scripts', 'styleguide-scripts', 'watch:pl'], () => {
+  gulp.task('serve', ['css', 'ts-scripts', 'js-bundle', 'scripts', 'styleguide-scripts', 'watch:pl'], () => {
     if (config.browserSync.domain) {
       browserSync.init({
         injectChanges: true,
@@ -135,8 +150,8 @@ module.exports = (gulp, config) => {
       });
     }
     gulp.watch(config.paths.js, ['scripts', 'styleguide-scripts']).on('change', browserSync.reload);
+    gulp.watch(config.paths.ts, ['ts-scripts', 'js-bundle']);
     gulp.watch(`${config.paths.sass}/**/*.scss`, ['css']);
-    gulp.watch(config.paths.img, ['imagemin']);
     gulp.watch(config.patternLab.scssToYAML[0].src, ['pl:scss-to-yaml']);
   });
 
@@ -155,23 +170,14 @@ module.exports = (gulp, config) => {
   /**
    * Theme task declaration
    */
-  gulp.task('build', ['imagemin', 'clean', 'scripts', 'styleguide-scripts', 'css', 'icons']);
+  gulp.task('build', ['imagemin', 'clean', 'ts-scripts', 'js-bundle', 'scripts', 'styleguide-scripts', 'css', 'icons']);
 
   /**
    * Deploy
    */
   gulp.task('ghpages-deploy', () => {
     // Create build directory.
-    gulp
-      .src(
-        [
-          `${config.paths.dist_js}/**/*`,
-          `${config.paths.pattern_lab}/**/*`,
-          `${config.themeDir}/CNAME`,
-        ],
-        { base: config.themeDir },
-      )
-      .pipe(gulp.dest('build'));
+    gulp.src([`${config.paths.dist_js}/**/*`, `${config.paths.pattern_lab}/**/*`], { base: config.themeDir }).pipe(gulp.dest('build'));
     // Publish the build directory to github pages.
     ghpages.publish(`${config.themeDir}build`, (err) => {
       if (err === undefined) {
