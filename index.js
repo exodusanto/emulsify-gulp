@@ -50,11 +50,9 @@ module.exports = (gulp, config) => {
     gulp.src(config.paths.ts)
       .pipe(
         ts({
-          compilerOptions: {
-            target: 'es5',
-            module: 'commonjs',
-            sourceMap: true,
-          },
+          target: 'es5',
+          module: 'commonjs',
+          sourceMap: true,
         }),
       )
       .pipe(gulp.dest(file => file.base));

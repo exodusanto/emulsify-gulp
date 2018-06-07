@@ -11,6 +11,7 @@
       `!${themeDir}/components/_patterns/bundles/**/*.js`,
     ],
     dist_bundle: `${themeDir}/components/_patterns/bundles`,
+    dist_js: `${themeDir}/dist`,
     sass: themeDir,
     img: [
       `${themeDir}/images/**/*`,
