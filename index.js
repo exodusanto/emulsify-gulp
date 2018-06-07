@@ -13,6 +13,7 @@ module.exports = (gulp, config) => {
   const webpack = require('webpack-stream');
   const named = require('vinyl-named');
   const ts = require('gulp-typescript');
+  const runSequence = require('run-sequence');
 
   // eslint-disable-next-line no-redeclare, no-var
   var config = _.defaultsDeep(config, defaultConfig);
@@ -46,24 +47,19 @@ module.exports = (gulp, config) => {
   /**
    * Script Task
    */
-  gulp.task('ts-scripts', () => {
-    gulp.src(config.paths.ts)
-      .pipe(
-        ts({
-          target: 'es5',
-          module: 'commonjs',
-          sourceMap: true,
-        }),
-      )
-      .pipe(gulp.dest(file => file.base));
-  });
+  gulp.task('ts-scripts', () => gulp.src(config.paths.ts)
+    .pipe(
+      ts({
+        target: 'es5',
+        module: 'commonjs',
+        sourceMap: true,
+      }),
+    ).pipe(gulp.dest(file => file.base)));
 
-  gulp.task('js-bundle', () => {
-    gulp.src(config.paths.jsBundle)
-      .pipe(named())
-      .pipe(webpack())
-      .pipe(gulp.dest(config.paths.dist_bundle));
-  });
+  gulp.task('js-bundle', () => gulp.src(config.paths.jsBundle)
+    .pipe(named())
+    .pipe(webpack())
+    .pipe(gulp.dest(config.paths.dist_bundle)));
 
   gulp.task('scripts', () => {
     gulp.src(config.paths.js)
@@ -125,7 +121,7 @@ module.exports = (gulp, config) => {
   /**
    * Task for running browserSync.
    */
-  gulp.task('serve', ['css', 'ts-scripts', 'js-bundle', 'scripts', 'styleguide-scripts', 'watch:pl'], () => {
+  gulp.task('serve', () => {
     if (config.browserSync.domain) {
       browserSync.init({
         injectChanges: true,
@@ -148,7 +144,9 @@ module.exports = (gulp, config) => {
       });
     }
     gulp.watch(config.paths.js, ['scripts', 'styleguide-scripts']).on('change', browserSync.reload);
-    gulp.watch(config.paths.ts, ['ts-scripts', 'js-bundle']);
+    gulp.watch(config.paths.ts, (callback) => {
+      runSequence('ts-scripts', 'js-bundle', callback);
+    });
     gulp.watch(`${config.paths.sass}/**/*.scss`, ['css']);
     gulp.watch(config.patternLab.scssToYAML[0].src, ['pl:scss-to-yaml']);
   });
@@ -156,7 +154,9 @@ module.exports = (gulp, config) => {
   /**
    * Theme task declaration
    */
-  gulp.task('theme', ['serve']);
+  gulp.task('theme', (callback) => {
+    runSequence('css', 'ts-scripts', 'js-bundle', 'scripts', 'styleguide-scripts', 'watch:pl', 'serve', callback);
+  });
 
   gulp.task('compile', tasks.compile);
   gulp.task('clean', tasks.clean);
