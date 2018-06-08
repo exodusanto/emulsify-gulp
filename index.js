@@ -150,12 +150,10 @@ module.exports = (gulp, config) => {
         port: openPort,
       });
     }
-    gwatch(config.paths.js, ['scripts', 'styleguide-scripts']).on('change', browserSync.reload);
-    gwatch(config.paths.ts, () => {
-      runSequence('ts-scripts', 'js-bundle');
-    });
-    gwatch(`${config.paths.sass}/**/*.scss`, ['css']);
-    gwatch(config.patternLab.scssToYAML[0].src, ['pl:scss-to-yaml']);
+    gwatch(config.paths.js, () => runSequence(['scripts', 'styleguide-scripts'])).on('change', browserSync.reload);
+    gwatch(config.paths.ts, () => runSequence('ts-scripts', 'js-bundle'));
+    gwatch(`${config.paths.sass}/**/*.scss`, () => runSequence(['css']));
+    gwatch(config.patternLab.scssToYAML[0].src, () => runSequence(['pl:scss-to-yaml']));
   });
 
   /**
