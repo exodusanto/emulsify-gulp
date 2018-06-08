@@ -15,6 +15,7 @@ module.exports = (gulp, config) => {
   const ts = require('gulp-typescript');
   const runSequence = require('run-sequence');
   const gwatch = require('gulp-watch');
+  const clean = require('gulp-clean');
 
   // eslint-disable-next-line no-redeclare, no-var
   var config = _.defaultsDeep(config, defaultConfig);
@@ -57,7 +58,12 @@ module.exports = (gulp, config) => {
       }),
     ).pipe(gulp.dest(file => file.base)));
 
-  gulp.task('js-bundle', () => gulp.src(config.paths.jsBundle)
+  gulp.task('clean-bundle', () => {
+    gulp.src(config.paths.dist_bundle)
+      .pipe(clean());
+  });
+
+  gulp.task('js-bundle', ['clean-bundle'], () => gulp.src(config.paths.jsBundle)
     .pipe(named())
     .pipe(webpack())
     .pipe(gulp.dest(config.paths.dist_bundle)));
