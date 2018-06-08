@@ -149,8 +149,7 @@ module.exports = (gulp, config) => {
         port: openPort,
       });
     }
-    gulp.watch(config.paths.js, () => runSequence(['scripts', 'styleguide-scripts'])).on('change', browserSync.reload);
-    gulp.watch(config.paths.ts, () => runSequence('ts-scripts', 'js-bundle'));
+    gulp.watch(config.paths.ts, () => runSequence('ts-scripts', 'js-bundle', ['scripts', 'styleguide-scripts'], () => browserSync.reload()));
     gulp.watch(`${config.paths.sass}/**/*.scss`, () => runSequence(['css']));
     gulp.watch(config.patternLab.scssToYAML[0].src, () => runSequence(['pl:scss-to-yaml']));
   });
