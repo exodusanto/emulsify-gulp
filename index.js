@@ -14,7 +14,6 @@ module.exports = (gulp, config) => {
   const named = require('vinyl-named');
   const ts = require('gulp-typescript');
   const runSequence = require('run-sequence');
-  const gwatch = require('gulp-watch');
   const clean = require('gulp-clean');
 
   // eslint-disable-next-line no-redeclare, no-var
@@ -150,10 +149,10 @@ module.exports = (gulp, config) => {
         port: openPort,
       });
     }
-    gwatch(config.paths.js, () => runSequence(['scripts', 'styleguide-scripts'])).on('change', browserSync.reload);
-    gwatch(config.paths.ts, () => runSequence('ts-scripts', 'js-bundle'));
-    gwatch(`${config.paths.sass}/**/*.scss`, () => runSequence(['css']));
-    gwatch(config.patternLab.scssToYAML[0].src, () => runSequence(['pl:scss-to-yaml']));
+    gulp.watch(config.paths.js, () => runSequence(['scripts', 'styleguide-scripts'])).on('change', browserSync.reload);
+    gulp.watch(config.paths.ts, () => runSequence('ts-scripts', 'js-bundle'));
+    gulp.watch(`${config.paths.sass}/**/*.scss`, () => runSequence(['css']));
+    gulp.watch(config.patternLab.scssToYAML[0].src, () => runSequence(['pl:scss-to-yaml']));
   });
 
   /**
