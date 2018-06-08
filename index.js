@@ -144,8 +144,8 @@ module.exports = (gulp, config) => {
       });
     }
     gulp.watch(config.paths.js, ['scripts', 'styleguide-scripts']).on('change', browserSync.reload);
-    gulp.watch(config.paths.ts, (callback) => {
-      runSequence('ts-scripts', 'js-bundle', callback);
+    gulp.watch(config.paths.ts, () => {
+      runSequence('ts-scripts', 'js-bundle');
     });
     gulp.watch(`${config.paths.sass}/**/*.scss`, ['css']);
     gulp.watch(config.patternLab.scssToYAML[0].src, ['pl:scss-to-yaml']);
