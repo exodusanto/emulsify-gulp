@@ -171,7 +171,9 @@ module.exports = (gulp, config) => {
   /**
    * Theme task declaration
    */
-  gulp.task('build', ['imagemin', 'clean', 'ts-scripts', 'js-bundle', 'scripts', 'styleguide-scripts', 'css', 'icons']);
+  gulp.task('build', (callback) => {
+    runSequence('imagemin', 'clean', 'ts-scripts', 'js-bundle', 'scripts', 'styleguide-scripts', 'css', 'icons', callback);
+  });
 
   /**
    * Deploy
