@@ -3,14 +3,17 @@
 (() => {
   const themeDir = './';
   const paths = {
-    js: `${themeDir}/components/_patterns/bundles/**/*.js`,
-    ts: `${themeDir}/components/_patterns/**/*.ts`,
+    js: `${themeDir}/components/_bundles/**/*.js`,
+    ts: [
+      `${themeDir}/components/_patterns/**/*.ts`,
+      `${themeDir}/components/ts/**/*.ts`,
+    ],
     jsBundle: [
       `${themeDir}/components/_patterns/**/*.js`,
-      `!${themeDir}/components/_patterns/**/ts/*.js`,
-      `!${themeDir}/components/_patterns/bundles/**/*.js`,
+      `!${themeDir}/components/_patterns/**/ts/**/*.js`,
+      `!${themeDir}/components/_patterns/_ts/**/*.js`,
     ],
-    dist_bundle: `${themeDir}/components/_patterns/bundles`,
+    dist_bundle: `${themeDir}/components/_bundles`,
     dist_js: `${themeDir}/dist`,
     sass: themeDir,
     img: [
