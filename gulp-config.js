@@ -16,6 +16,7 @@
     dist_bundle: `${themeDir}/components/_bundles`,
     dist_js: `${themeDir}/dist`,
     sass: themeDir,
+    icons: `${themeDir}/images/icons/src`,
     img: [
       `${themeDir}/images/**/*`,
       `${themeDir}/components/_patterns/**/*.{jpg, gif, png, svg}`,
@@ -47,7 +48,7 @@
       sourceComments: false,
       sourceMapEmbed: false,
       outputStyle: 'expanded',
-      autoPrefixerBrowsers: ['last 2 versions', 'IE >= 10'],
+      autoPrefixerBrowsers: ['last 2 versions', 'IE >= 11'],
       includePaths: ['./node_modules'],
     },
     iconConfig: {

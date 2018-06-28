@@ -108,7 +108,8 @@ module.exports = (gulp, config) => {
    * Task for generating icon colors/png fallbacks from svg.
    */
   gulp.task('icons', () => {
-    gulp.src('**/*.svg', { cwd: `${config.paths.img}/icons/src` })
+    gulp
+      .src('**/*.svg', { cwd: `${config.paths.icons}` })
       .pipe(svgSprite(config.iconConfig))
       .pipe(gulp.dest('.'));
   });
