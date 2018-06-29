@@ -93,5 +93,13 @@
       // WebPageTest API key https://www.webpagetest.org/getkey.php
       // key:
     },
+    babel: {
+      script: {
+        presets: ['env', 'minify'],
+      },
+      styleguideScripts: {
+        presets: ['env'],
+      },
+    },
   };
 })();
