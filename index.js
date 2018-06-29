@@ -48,9 +48,7 @@ module.exports = (gulp, config) => {
       .src(config.paths.js)
       .pipe(sourcemaps.init())
       .pipe(
-        babel({
-          presets: ['env', 'minify'],
-        }),
+        babel(config.babel.script),
       )
       .pipe(sourcemaps.write(config.themeDir))
       .pipe(gulp.dest(config.paths.dist_js));
@@ -61,9 +59,7 @@ module.exports = (gulp, config) => {
       .src(config.paths.js)
       .pipe(sourcemaps.init())
       .pipe(
-        babel({
-          presets: ['env'],
-        }),
+        babel(config.babel.styleguideScripts),
       )
       // Concatenate everything within the JavaScript folder.
       .pipe(concat('scripts-styleguide.js'))
