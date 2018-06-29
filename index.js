@@ -1,10 +1,10 @@
 /* globals require */
 
-module.exports = (gulp, config) => {
+module.exports = (gulp, localConfig = {}) => {
   // General
   // eslint-disable-next-line no-redeclare, no-var
   var gulp = require('gulp-help')(gulp);
-  const _ = require('lodash');
+  // const _ = require('lodash');
   const portscanner = require('portscanner');
   const browserSync = require('browser-sync').create();
   const babel = require('gulp-babel');
@@ -15,9 +15,11 @@ module.exports = (gulp, config) => {
   const ts = require('gulp-typescript');
   const runSequence = require('run-sequence');
   const clean = require('gulp-clean');
+  const objectAssignDeep = require('object-assign-deep');
 
   // eslint-disable-next-line no-redeclare, no-var
-  var config = _.defaultsDeep(config, defaultConfig);
+  // var config = _.defaultsDeep(config, defaultConfig);
+  const config = objectAssignDeep({}, defaultConfig, localConfig);
 
   // scripts
   const concat = require('gulp-concat');
