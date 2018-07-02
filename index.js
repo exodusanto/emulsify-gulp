@@ -16,6 +16,7 @@ module.exports = (gulp, localConfig = {}) => {
   const runSequence = require('run-sequence');
   const clean = require('gulp-clean');
   const objectAssignDeep = require('object-assign-deep');
+  const gulpif = require('gulp-if');
 
   // eslint-disable-next-line no-redeclare, no-var
   // var config = _.defaultsDeep(config, defaultConfig);
@@ -75,7 +76,7 @@ module.exports = (gulp, localConfig = {}) => {
       .pipe(
         babel(config.babel.script),
       )
-      .pipe(sourcemaps.write(config.themeDir))
+      .pipe(gulpif(config.js.sourceMap, sourcemaps.write(config.themeDir)))
       .pipe(gulp.dest(config.paths.dist_js));
   });
 
@@ -87,7 +88,7 @@ module.exports = (gulp, localConfig = {}) => {
       )
       // Concatenate everything within the JavaScript folder.
       .pipe(concat('scripts-styleguide.js'))
-      .pipe(sourcemaps.write(config.themeDir))
+      .pipe(gulpif(config.js.sourceMap, sourcemaps.write(config.themeDir)))
       .pipe(gulp.dest(config.paths.dist_js));
   });
 

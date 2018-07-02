@@ -101,5 +101,8 @@
         presets: ['env'],
       },
     },
+    js: {
+      sourceMap: true,
+    },
   };
 })();
